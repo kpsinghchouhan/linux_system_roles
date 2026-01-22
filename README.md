@@ -1,4 +1,4 @@
-# Kpsinghchouhan Linux_system_roles Collection
+# kpsinghchouhan linux_system_roles Collection
 
 This repository contains the `kpsinghchouhan.linux_system_roles` Ansible Collection.
 
