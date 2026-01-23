@@ -8,5 +8,5 @@ releases:
 
         '
     fragments:
-    - 0.1.0.yaml
+      - 0.1.0.yaml
     release_date: '2026-01-23'
