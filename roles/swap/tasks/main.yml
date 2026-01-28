@@ -1,0 +1,6 @@
+---
+# tasks file for kpsinghchouhan.linux_system_roles.swap
+
+- name: Display the value of swap_my_variable
+  ansible.builtin.debug:
+    msg: "The value of swap_my_variable is {{ swap_my_variable }}"
