@@ -1,6 +1,59 @@
 ---
 # tasks file for kpsinghchouhan.linux_system_roles.swap
 
-- name: Display the value of swap_my_variable
+- name: Check swap status
+  ansible.builtin.command:
+    cmd: swapon --show
+  register: swap_status
+  changed_when: false
+
+- name: Display swap status
   ansible.builtin.debug:
-    msg: "The value of swap_my_variable is {{ swap_my_variable }}"
+    var: swap_status
+
+- name: Disable swap
+  when:
+    - not swap_enable
+    - ansible_swaptotal_mb > 0
+  block:
+    - name: Disable swap for current session
+      ansible.builtin.command:
+        cmd: swapoff -a
+      changed_when: false
+
+    - name: Remove swap entry from /etc/fstab
+      ansible.builtin.lineinfile:
+        path: /etc/fstab
+        regexp: '^\s*[^#].*swap'
+        state: absent
+
+- name: Enable swap
+  when:
+    - swap_enable
+    - ansible_swaptotal_mb == 0
+  block:
+    - name: Create a swap file
+      ansible.builtin.command:
+        cmd: "fallocate -l {{ swap_file_size }} {{ swap_file_path }}"
+        creates: "{{ swap_file_path }}"
+
+    - name: Set swap file permissions
+      ansible.builtin.file:
+        path: "{{ swap_file_path }}"
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Format the swap file
+      ansible.builtin.command:
+        cmd: "mkswap {{ swap_file_path }}"
+
+    - name: Enable the swap file
+      ansible.builtin.mount:
+        name: swap
+        src: "{{ swap_file_path }}"
+        fstype: swap
+        opts: sw
+        state: mounted
+
+    - name: 
