@@ -3,4 +3,6 @@
 
 # Variable that will be displayed in debug output
 # This demonstrates proper role variable naming with the 'run_' prefix
-swap_my_variable: "default_value"
+swap_enable: false
+swap_file_path: /swap.img
+swap_file_size: 1.9G

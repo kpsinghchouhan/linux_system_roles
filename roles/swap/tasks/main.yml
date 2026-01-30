@@ -14,7 +14,7 @@
 - name: Disable swap
   when:
     - not swap_enable
-    - ansible_swaptotal_mb > 0
+    - ansible_facts['swaptotal_mb'] > 0
   block:
     - name: Disable swap for current session
       ansible.builtin.command:
@@ -30,7 +30,7 @@
 - name: Enable swap
   when:
     - swap_enable
-    - ansible_swaptotal_mb == 0
+    - ansible_facts['swaptotal_mb'] > 0
   block:
     - name: Create a swap file
       ansible.builtin.command:
@@ -46,14 +46,13 @@
 
     - name: Format the swap file
       ansible.builtin.command:
-        cmd: "mkswap {{ swap_file_path }}"
+        cmd: "mkswap {{ swap_file_path }} && swapon {{ swap_file_path }}"
+      changed_when: false
 
     - name: Enable the swap file
-      ansible.builtin.mount:
+      ansible.posix.mount:
         name: swap
         src: "{{ swap_file_path }}"
         fstype: swap
         opts: sw
         state: mounted
-
-    - name: 
